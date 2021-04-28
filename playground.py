@@ -5,8 +5,8 @@ from segmentation_model.deep_lab_v3 import DeepLabV3
 train_dataset_path = "data/dataset/train"
 test_dataset_path = "data/dataset/test"
 
-im_resize = (230, 230)
-batch_size = 2
+im_resize = (128, 128)
+batch_size = 3
 backbone = "RESNET50"
 optimizer = "Adam"
 lr = 0.001

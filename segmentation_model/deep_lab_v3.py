@@ -1,9 +1,10 @@
 import torch
+import numpy as np
 
 from torchvision import models
-from torchvision.models.segmentation.deeplabv3 import DeepLabHead
 from torch import optim
-from torch.nn import CrossEntropyLoss
+from torch.nn import CrossEntropyLoss, Conv2d
+from torch.nn.functional import softmax
 from tqdm import tqdm
 from utils.utils import plot_hist, get_metrics, save_predictions
 
@@ -43,7 +44,8 @@ class DeepLabV3:
         elif self.backbone == "RESNET101":
             model = models.segmentation.deeplabv3_resnet101(pretrained=True, progress=True)
 
-        model.classifier = DeepLabHead(2048, self.output_channels)
+        model.classifier[4] = Conv2d(256, self.output_channels, kernel_size=(1, 1), stride=(1, 1))
+        model.aux_classifier[4] = Conv2d(256, self.output_channels, kernel_size=(1, 1), stride=(1, 1))
 
         return model
 
@@ -68,7 +70,7 @@ class DeepLabV3:
             epoch_loss += loss.data.item() / len(x)
 
             y_true = y.data.cpu().numpy()
-            y_hat = output['out'].data.max(1)[1].cpu().numpy()[:, :, :]
+            y_hat = np.nanargmax(softmax(output['out'].data.cpu(), dim=1).numpy(), axis=1)
 
             for y_true_, y_hat_ in zip(y_true, y_hat):
                 all_y_true.append(y_true_)
@@ -99,7 +101,7 @@ class DeepLabV3:
             epoch_loss += loss.data.item() / len(x)
 
             y_true = y.data.cpu().numpy()
-            y_hat = output['out'].data.max(1)[1].cpu().numpy()[:, :, :]
+            y_hat = np.nanargmax(softmax(output['out'].data.cpu(), dim=1).numpy(), axis=1)
 
             for y_true_, y_hat_ in zip(y_true, y_hat):
                 all_y_true.append(y_true_)
@@ -171,7 +173,7 @@ class DeepLabV3:
 
             x_batch = x.data.cpu()
             y_true = y.data.cpu().numpy()
-            y_hat = output['out'].data.max(1)[1].cpu().numpy()[:, :, :]
+            y_hat = np.nanargmax(softmax(output['out'].data.cpu(), dim=1).numpy(), axis=1)
 
             for x_, y_true_, y_hat_, tag in zip(x_batch, y_true, y_hat, tags):
                 save_predictions(loader=loader, x=x_, y_hat=y_hat_, tag=tag, path=output_path)
