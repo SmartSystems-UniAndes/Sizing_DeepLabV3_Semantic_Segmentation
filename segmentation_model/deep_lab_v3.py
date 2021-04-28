@@ -3,8 +3,9 @@ import numpy as np
 
 from torchvision import models
 from torch import optim
-from torch.nn import CrossEntropyLoss, Conv2d
+from torch.nn import Conv2d
 from torch.nn.functional import softmax
+from segmentation_model.soft_iou_loss import SoftIOULoss
 from tqdm import tqdm
 from utils.utils import plot_hist, get_metrics, save_predictions
 
@@ -34,8 +35,8 @@ class DeepLabV3:
         else:
             raise ValueError(f"{optimizer} is not supported.")
 
-        self.criterion = CrossEntropyLoss()
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.criterion = SoftIOULoss(device=self.device)
 
     def create_model(self):
         model = None
@@ -63,6 +64,7 @@ class DeepLabV3:
 
             self.optimizer.zero_grad()
             output = self.model(x)
+
             loss = self.criterion(output['out'], y)
 
             loss.backward()
