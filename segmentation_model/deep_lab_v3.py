@@ -2,13 +2,28 @@ import torch
 import numpy as np
 
 from torchvision import models
-from torchvision.models.segmentation.deeplabv3 import DeepLabHead
 from torch import optim
 from torch.nn import Conv2d
 from torch.nn.functional import softmax
 from segmentation_model.soft_iou_loss import SoftIOULoss
 from tqdm import tqdm
 from utils.utils import plot_hist, get_metrics, save_predictions
+from prettytable import PrettyTable
+
+
+def count_parameters(model):
+    table = PrettyTable(["Modules", "Parameters"])
+    total_params = 0
+    for name, parameter in model.named_parameters():
+        if not parameter.requires_grad:
+            continue
+        param = parameter.numel()
+        table.add_row([name, param])
+        total_params += param
+    print(table)
+    print(f"Total Trainable Params: {total_params}")
+
+    return total_params
 
 
 class DeepLabV3:
@@ -57,6 +72,8 @@ class DeepLabV3:
 
         for param in model.aux_classifier.parameters():
             param.requires_grad = True
+
+        count_parameters(model)
 
         return model
 
