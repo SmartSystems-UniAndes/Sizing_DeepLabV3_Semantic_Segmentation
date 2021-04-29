@@ -2,6 +2,7 @@ import torch
 import numpy as np
 
 from torchvision import models
+from torchvision.models.segmentation.deeplabv3 import DeepLabHead
 from torch import optim
 from torch.nn import Conv2d
 from torch.nn.functional import softmax
@@ -47,6 +48,15 @@ class DeepLabV3:
 
         model.classifier[4] = Conv2d(256, self.output_channels, kernel_size=(1, 1), stride=(1, 1))
         model.aux_classifier[4] = Conv2d(256, self.output_channels, kernel_size=(1, 1), stride=(1, 1))
+
+        for param in model.parameters():
+            param.requires_grad = False
+
+        for param in model.classifier.parameters():
+            param.requires_grad = True
+
+        for param in model.aux_classifier.parameters():
+            param.requires_grad = True
 
         return model
 
