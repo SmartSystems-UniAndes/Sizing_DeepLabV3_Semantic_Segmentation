@@ -2,15 +2,15 @@ from datasets.sizing_dataset import SizingDataset
 from torch.utils.data import DataLoader
 from segmentation_model.deep_lab_v3 import DeepLabV3
 
-train_dataset_path = "data/dataset/train"
-test_dataset_path = "data/dataset/test"
+train_dataset_path = "dataset/train"
+test_dataset_path = "dataset/test"
 
 im_resize = (500, 500)
-batch_size = 3
-backbone = "RESNET50"
+batch_size = 8
+backbone = "RESNET101"
 optimizer = "Adam"
 lr = 0.001
-epochs = 10
+epochs = 50
 
 load_model = False
 model_name = f"trained_models/deeplab_v3_{backbone}_model.pt"
