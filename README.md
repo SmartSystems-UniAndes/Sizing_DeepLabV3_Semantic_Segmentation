@@ -6,6 +6,11 @@ This repository contains a case study for the work developed by Malof, J. et al.
 and capacity using deep learning and overhead imagery* [1]. Here is shown the transfer learning process for 
 photovoltaic panels segmentation with the DeepLab V3 architecture trained for ImageNet.
 
+## How it works?
+
+Run the file main.py. If you want tho check the transfer learning process, see the segmentation_model/deep_lab_v3.py file.
+To download the dataset and the trained model, go to this link: https://drive.google.com/drive/folders/1HF9cHprGdPsjziL-NKyU9dU2R6fUEUGu?usp=sharing
+
 ## Work Environment
 
 See [SETUP.md](SETUP.md).
